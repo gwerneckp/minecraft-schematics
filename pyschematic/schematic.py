@@ -64,6 +64,7 @@ class Schematic():
         Raises:
             FileNotFoundError: If the file does not exist.
             nbt.lib.MalformedFileError: If the file cannot be loaded due to a parsing error.
+            Exception: If the schematic is an incompatible version and force is False.
         """
         try:
             self.raw = nbt.load(path)
@@ -126,9 +127,43 @@ class Schematic():
         return blocks.reshape(self.width, self.height, self.length)
 
     @property
-    def block_data(self) -> np.ndarray:
-        """np.ndarray: A 1D numpy array representing the id of each block within the schematic."""
-        return np.array(self.raw['BlockData'])
+    def palette(self) -> np.array:
+        """A 1D numpy array containing all unique blocks in the schematic.
+
+        The index of each block in the list is the ID of the block in the schematic,
+        which can be used to find out which block is at a certain position in block_data.
+
+        Note: It is generally recommended to use the 'blocks' property to access individual blocks with their properties instead of using the palette.
+
+        Returns:
+            np.array: An array containing the unique blocks in the schematic.
+        """
+
+        result = np.array([None] * len(self.raw['Palette']))
+        for blockdata in self.raw['Palette']:
+            result[self.raw['Palette'][blockdata]] = Block(blockdata)
+
+        return result
+    
+    @property
+    def palette_max(self) -> np.int8:
+        
+        # If the palette max is not set, we can infer it from the length of the palette
+        return self.raw['PaletteMax'] or len(self.palette)
+
+    @property
+    def palette_max(self) -> np.int8:
+        """The maximum index value for the block palette in the schematic.
+
+        This value represents the highest ID of a block in the schematic or the number of unique blocks in the schematic's block palette.
+
+        Returns:
+            np.int8: The maximum index value for the block palette in the schematic.
+        """
+
+        # If the palette max is not set, we can infer it from the length of the palette
+        return self.raw['PaletteMax'] or len(self.palette)
+
 
     @property
     def offset_x(self) -> np.int8:
@@ -174,3 +209,8 @@ class Schematic():
     def worldedit_offset(self) -> Tuple[np.int8, np.int8, np.int8]:
         """Tuple: The worldedit WEOffset of the schematic in (WEOffsetX, WEOffsetY, WEOffsetZ)."""
         return self.worldedit_offset_x, self.worldedit_offset_y, self.worldedit_offset_z
+    
+    @property
+    def data_version(self) -> np.int8:
+        """np.int8: The data version of the schematic. This is the ID of the Minecraft version the schematic was created in."""
+        return np.int8(self.raw['DataVersion'])
