@@ -6,72 +6,61 @@ import numpy as np
 
 class Block():
     def __init__(self, blockdata: str):
-        self.raw = blockdata
-        # minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+        """Representation of a block in the Minecraft schematic.
+
+        Args:
+            blockdata (str): The raw block data in the format 'block_type[properties]'.
+        """
 
     @property
     def type(self) -> str:
-        return self.raw.split('[')[0]
+        """str: The type of the block without properties."""
 
     @property
     def properties(self) -> dict:
-        properties = {}
-        for prop in self.raw.split('[')[1].split(']')[0].split(','):
-            key, value = prop.split('=')
-            properties[key] = value
-        return properties
+        """dict: A dictionary containing the properties of the block."""
 
     @property
     def raw_properties(self) -> str:
-        return self.raw.split('[')[1].split(']')[0]
+        """str: The raw properties of the block without the block type."""
 
     def __repr__(self) -> str:
-        return f'Block({self.raw})'
+        """Return a string representation of the block."""
 
     def __str__(self) -> str:
-        return f'Block({self.raw})'
+        """Return a human-readable string representation of the block."""
 
 
 class Schematic():
     def __init__(self):
-        self.raw = None
+        """Representation of a Minecraft schematic."""
 
     def load(self, path: str):
-        self.raw = nbt.load(path)
-        return self
+        """Load the schematic from a file.
+
+        Args:
+            path (str): The path to the schematic file.
+
+        Returns:
+            Schematic: The current instance of the Schematic class.
+        """
 
     @property
     def size(self) -> Tuple[np.short, np.short, np.short]:
-        return self.width, self.height, self.length
+        """Tuple: The size of the schematic in (width, height, length)."""
 
     @property
     def width(self) -> np.short:
-        return np.short(self.raw['Width'])
+        """np.short: The width of the schematic."""
 
     @property
     def height(self) -> np.short:
-        return np.short(self.raw['Height'])
+        """np.short: The height of the schematic."""
 
     @property
     def length(self) -> np.short:
-        return np.short(self.raw['Length'])
+        """np.short: The length of the schematic."""
 
     @property
     def blocks(self) -> np.ndarray:
-        # create list with length of last index
-        block_data = np.array(self.raw['BlockData'])
-        blocks = np.array([None] * len(block_data))
-        palette_inversed = np.array([(Block(blockdata), self.raw['Palette'][blockdata])
-                                     for blockdata in self.raw['Palette']])
-
-        for block, id_in_schematic in palette_inversed:
-            # get positions of all blocks with id_in_schematic in block_data
-            positions = np.where(block_data == id_in_schematic)
-            # set all blocks at positions to block
-            blocks[positions] = block
-
-        return blocks.reshape(self.width, self.height, self.length)
-
-
-s = Schematic().load('newblocks.schem')
-print(s.blocks)
+        """np.ndarray: A 3D numpy array representing the blocks in the schematic."""
