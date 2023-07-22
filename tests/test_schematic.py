@@ -9,7 +9,7 @@ from pyschematic import Block, Schematic
 
 # Test data
 all_blocks = 'newblocks.schem'
-all_blocks_directory = path.join(path.dirname(__file__), all_blocks)
+all_blocks_directory = path.join(path.dirname(__file__), "schematics", all_blocks)
 
 # Block class tests
 
@@ -50,3 +50,8 @@ def test_schematic_blocks_shape():
 
     blocks = schematic.blocks
     assert blocks.shape == (expected_width, expected_height, expected_length)
+
+def test_schematic_blocks():
+    schematic = Schematic().load(all_blocks_directory)
+    print(schematic.blocks)
+    assert schematic.blocks[0, 0, 0] == Block("minecraft:packed_ice")

@@ -37,6 +37,12 @@ class Block():
 
     def __str__(self) -> str:
         return f'Block({self.raw})'
+    
+    def __eq__(self, __value: object) -> bool:
+        if isinstance(__value, Block):
+            return self.raw == __value.raw
+        else:
+            return False
 
 
 class Schematic():
