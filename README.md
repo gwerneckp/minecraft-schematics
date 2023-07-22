@@ -13,10 +13,10 @@ The library is based on the Minecraft Schematic format version 2.
 
 ## Installation
 
-To install PySchematic, you can use pip:
+To install Minecraft Schematics, you can use pip:
 
 ```bash
-pip install pyschematic
+pip install minecraftschematics
 ```
 
 ## Usage
@@ -69,7 +69,7 @@ print(metadata)          # Output: { 'Metadata_key_1': 'Metadata_value_1', ... }
 
 ## Contributing
 
-If you have any suggestions, bug reports, or feature requests, please feel free to open an issue or submit a pull request on [GitHub](https://github.com/gwerneckpaiva/pyschematic).
+If you have any suggestions, bug reports, or feature requests, please feel free to open an issue or submit a pull request on [GitHub](https://github.com/gwerneckpaiva/minecraft-schematics).
 
 ## License
 
