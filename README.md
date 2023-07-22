@@ -1,6 +1,6 @@
-# PySchematic - Minecraft Schematic Library
+# Minecraft Schematics - Minecraft Schematic Library
 
-PySchematic is a Python library for working with Minecraft schematic files. It provides a simple and convenient way to read and process schematic files used in Minecraft.
+Minecraft Schematics is a Python library for working with Minecraft schematic files. It provides a simple and convenient way to read and process schematic files used in Minecraft.
 
 The library is based on the Minecraft Schematic format version 2.
 
@@ -21,14 +21,14 @@ pip install pyschematic
 
 ## Usage
 
-Here's a quick guide on how to use the PySchematic library:
+Here's a quick guide on how to use the `minecraftschematics` library:
 
 ### Schematic Class
 
 The `Schematic` class is the main class of the library. It is used to load schematic files with the `load` method and access the schematic's data.
 
 ```python
-from pyschematic import Schematic
+from minecraftschematics import Schematic
 
 schematic = Schematic().load('path/to/your/schematic_file.schematic')
 

@@ -5,7 +5,7 @@ import json
 import nbtlib as nbt
 import numpy as np
 
-from pyschematic import Block, Schematic
+from minecraftschematics import Block, Schematic
 
 # Test data
 all_blocks = 'newblocks.schem'
