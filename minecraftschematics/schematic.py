@@ -123,14 +123,9 @@ class Schematic():
         # create list with length of last index
         block_data = np.array(self.raw['BlockData'])
         blocks = np.array([None] * len(block_data))
-        palette_inversed = np.array([(Block(blockdata), self.raw['Palette'][blockdata])
-                                     for blockdata in self.raw['Palette']])
 
-        for block, id_in_schematic in palette_inversed:
-            # get positions of all blocks with id_in_schematic in block_data
-            positions = np.where(block_data == id_in_schematic)
-            # set all blocks at positions to block
-            blocks[positions] = block
+        for position, id_in_schematic in enumerate(block_data):
+            blocks[position] = self.palette[id_in_schematic]
 
         # reshape blocks to 3D array
         blocks = blocks.reshape(self.width, self.height, self.length)
@@ -159,12 +154,6 @@ class Schematic():
             result[self.raw['Palette'][blockdata]] = Block(blockdata)
 
         return result
-
-    @property
-    def palette_max(self) -> np.int8:
-
-        # If the palette max is not set, we can infer it from the length of the palette
-        return self.raw['PaletteMax'] or len(self.palette)
 
     @property
     def palette_max(self) -> np.int8:
