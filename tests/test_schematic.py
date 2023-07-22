@@ -65,5 +65,5 @@ def test_offset():
 
 def test_worldedit_offset():
     schematic = Schematic().load(house_directory)
-    assert schematic.worldedit_WEOffset == (-10, -1, 8)
+    assert schematic.worldedit_offset == (-10, -1, 8)
 

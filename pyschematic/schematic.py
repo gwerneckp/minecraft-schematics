@@ -1,8 +1,8 @@
+from os import strerror
 from typing import List, Tuple
 
 import nbtlib as nbt
 import numpy as np
-from os import strerror
 
 
 class Block():
@@ -156,21 +156,21 @@ class Schematic():
         return self.raw['Metadata']
 
     @property
-    def worldedit_WEOffsetX(self) -> np.int8:
+    def worldedit_offset_x(self) -> np.int8:
         """np.short: The worldedit WEOffsetX of the schematic."""
         return np.int8(self.metadata.get('WEOffsetX'))
 
     @property
-    def worldedit_WEOffsetY(self) -> np.int8:
+    def worldedit_offset_y(self) -> np.int8:
         """np.short: The worldedit WEOffsetY of the schematic."""
         return np.int8(self.metadata.get('WEOffsetY'))
 
     @property
-    def worldedit_WEOffsetZ(self) -> np.int8:
+    def worldedit_offset_z(self) -> np.int8:
         """np.short: The worldedit WEOffsetZ of the schematic."""
         return np.int8(self.metadata.get('WEOffsetZ'))
 
     @property
-    def worldedit_WEOffset(self) -> Tuple[np.int8, np.int8, np.int8]:
+    def worldedit_offset(self) -> Tuple[np.int8, np.int8, np.int8]:
         """Tuple: The worldedit WEOffset of the schematic in (WEOffsetX, WEOffsetY, WEOffsetZ)."""
-        return self.worldedit_WEOffsetX, self.worldedit_WEOffsetY, self.worldedit_WEOffsetZ
+        return self.worldedit_offset_x, self.worldedit_offset_y, self.worldedit_offset_z
