@@ -11,6 +11,9 @@ from pyschematic import Block, Schematic
 all_blocks = 'newblocks.schem'
 all_blocks_directory = path.join(path.dirname(__file__), "schematics", all_blocks)
 
+house = 'house.schem'
+house_directory = path.join(path.dirname(__file__), "schematics", house)
+
 # Block class tests
 
 
@@ -55,3 +58,12 @@ def test_schematic_blocks():
     schematic = Schematic().load(all_blocks_directory)
     print(schematic.blocks)
     assert schematic.blocks[0, 0, 0] == Block("minecraft:packed_ice")
+
+def test_offset():
+    schematic = Schematic().load(house_directory)
+    assert schematic.offset == (-6, 36, 24)
+
+def test_worldedit_offset():
+    schematic = Schematic().load(house_directory)
+    assert schematic.worldedit_WEOffset == (-10, -1, 8)
+

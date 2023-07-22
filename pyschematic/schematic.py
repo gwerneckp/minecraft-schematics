@@ -2,6 +2,7 @@ from typing import List, Tuple
 
 import nbtlib as nbt
 import numpy as np
+from os import strerror
 
 
 class Block():
@@ -37,7 +38,7 @@ class Block():
 
     def __str__(self) -> str:
         return f'Block({self.raw})'
-    
+
     def __eq__(self, __value: object) -> bool:
         if isinstance(__value, Block):
             return self.raw == __value.raw
@@ -50,11 +51,12 @@ class Schematic():
         """Representation of a Minecraft schematic."""
         self.raw = None
 
-    def load(self, path: str):
+    def load(self, path: str, force=False):
         """Load the schematic from a file.
 
         Args:
             path (str): The path to the schematic file.
+            force (bool, optional): Force loading the schematic even if it is an incompatible version. Defaults to False. (Not recommended as it may cause unintended errors.)
 
         Returns:
             Schematic: The current instance of the Schematic class.
@@ -65,6 +67,20 @@ class Schematic():
         """
         try:
             self.raw = nbt.load(path)
+            if (not force):
+                match self.raw['Version']:
+                    case None:
+                        raise Exception(
+                            "Version not found. This is likely due to an old version of the schematic format which this library does not support. Check out https://github.com/cbs228/nbtschematic for a library that supports version 1.")
+                    case 1:
+                        raise Exception(
+                            "Version 1 is not supported as it is an old version of the schematic format. Check out https://github.com/cbs228/nbtschematic for a library that supports version 1.")
+                    case 2:
+                        pass
+                    case _:
+                        raise Exception(
+                            f"This library does not fully support the version {self.raw['Version']} of the schematic format. Use force=True to force loading the schematic. This may cause unintended errors.")
+
         except FileNotFoundError as e:
             raise FileNotFoundError(f"File not found: {path}") from e
         except nbt.lib.MalformedFileError as e:
@@ -113,3 +129,48 @@ class Schematic():
     def block_data(self) -> np.ndarray:
         """np.ndarray: A 1D numpy array representing the id of each block within the schematic."""
         return np.array(self.raw['BlockData'])
+
+    @property
+    def offset_x(self) -> np.int8:
+        """np.short: The offset of the schematic in the x direction."""
+        return np.short(self.raw['Offset'][0])
+
+    @property
+    def offset_y(self) -> np.int8:
+        """np.short: The offset of the schematic in the y direction."""
+        return np.short(self.raw['Offset'][1])
+
+    @property
+    def offset_z(self) -> np.int8:
+        """np.short: The offset of the schematic in the z direction."""
+        return np.short(self.raw['Offset'][2])
+
+    @property
+    def offset(self) -> Tuple[np.int8, np.int8, np.int8]:
+        """Tuple: The offset of the schematic in (x, y, z)."""
+        return self.offset_x, self.offset_y, self.offset_z
+
+    @property
+    def metadata(self) -> dict:
+        """dict: A dictionary containing the metadata of the schematic."""
+        return self.raw['Metadata']
+
+    @property
+    def worldedit_WEOffsetX(self) -> np.int8:
+        """np.short: The worldedit WEOffsetX of the schematic."""
+        return np.int8(self.metadata.get('WEOffsetX'))
+
+    @property
+    def worldedit_WEOffsetY(self) -> np.int8:
+        """np.short: The worldedit WEOffsetY of the schematic."""
+        return np.int8(self.metadata.get('WEOffsetY'))
+
+    @property
+    def worldedit_WEOffsetZ(self) -> np.int8:
+        """np.short: The worldedit WEOffsetZ of the schematic."""
+        return np.int8(self.metadata.get('WEOffsetZ'))
+
+    @property
+    def worldedit_WEOffset(self) -> Tuple[np.int8, np.int8, np.int8]:
+        """Tuple: The worldedit WEOffset of the schematic in (WEOffsetX, WEOffsetY, WEOffsetZ)."""
+        return self.worldedit_WEOffsetX, self.worldedit_WEOffsetY, self.worldedit_WEOffsetZ
