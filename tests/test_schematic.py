@@ -1,7 +1,7 @@
 # tests/test_minecraft_schematic.py
 
 from os import path
-
+import json
 import nbtlib as nbt
 import numpy as np
 
@@ -14,6 +14,10 @@ all_blocks_directory = path.join(
 
 house = 'house.schem'
 house_directory = path.join(path.dirname(__file__), "schematics", house)
+
+block_entities = 'block_entities_test.schem'
+block_entities_directory = path.join(
+    path.dirname(__file__), "schematics", block_entities)
 
 # Block class tests
 
@@ -85,3 +89,8 @@ def test_palette():
 def test_palette_max():
     schematic = Schematic().load(house_directory)
     assert schematic.palette_max == 69
+
+
+def test_block_entities():
+    schematic = Schematic().load(block_entities_directory)
+    assert json.loads(schematic.block_entities[0]['front_text']['messages'][1])['text'] == 'Hello world'

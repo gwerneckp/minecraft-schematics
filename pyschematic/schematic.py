@@ -1,18 +1,19 @@
 from os import strerror
 from typing import List, Tuple
-
+from .utils import nbt_to_numpy
 import nbtlib as nbt
 import numpy as np
 
 
 class Block():
-    def __init__(self, blockdata: str):
+    def __init__(self, blockdata: str, block_entity: dict = None):
         """Representation of a block in the Minecraft schematic.
 
         Args:
             blockdata (str): The raw block data in the format 'block_type[properties]'.
         """
         self.raw = blockdata
+        self.block_entity: dict = block_entity
 
     @property
     def type(self) -> str:
@@ -26,6 +27,10 @@ class Block():
         for prop in self.raw.split('[')[1].split(']')[0].split(','):
             key, value = prop.split('=')
             properties[key] = value
+
+        if self.block_entity:
+            properties['block_entity'] = self.block_entity
+
         return properties
 
     @property
@@ -33,11 +38,14 @@ class Block():
         """str: The raw properties of the block without the block type."""
         return self.raw.split('[')[1].split(']')[0]
 
+    def add_block_entity(self, block_entity: dict):
+        self.block_entity = block_entity
+
     def __repr__(self) -> str:
-        return f'Block({self.raw})'
+        return f'Block({self.raw}, {self.block_entity})'
 
     def __str__(self) -> str:
-        return f'Block({self.raw})'
+        return f'Block({self.raw}, {self.block_entity})'
 
     def __eq__(self, __value: object) -> bool:
         if isinstance(__value, Block):
@@ -124,7 +132,14 @@ class Schematic():
             # set all blocks at positions to block
             blocks[positions] = block
 
-        return blocks.reshape(self.width, self.height, self.length)
+        # reshape blocks to 3D array
+        blocks = blocks.reshape(self.width, self.height, self.length)
+
+        for block_entity in self.block_entities:
+            blocks[block_entity['Pos'][2], block_entity['Pos'][1],
+                   block_entity['Pos'][0]].add_block_entity(block_entity)
+
+        return blocks
 
     @property
     def palette(self) -> np.array:
@@ -144,10 +159,10 @@ class Schematic():
             result[self.raw['Palette'][blockdata]] = Block(blockdata)
 
         return result
-    
+
     @property
     def palette_max(self) -> np.int8:
-        
+
         # If the palette max is not set, we can infer it from the length of the palette
         return self.raw['PaletteMax'] or len(self.palette)
 
@@ -164,6 +179,22 @@ class Schematic():
         # If the palette max is not set, we can infer it from the length of the palette
         return self.raw['PaletteMax'] or len(self.palette)
 
+    @property
+    def block_entities(self) -> np.array:
+        """Get a list of all block entities in the schematic.
+
+        Returns:
+            np.array: A numpy array containing dictionaries representing each block entity in the schematic.
+
+        Notes:
+            Each block entity is represented as a dictionary containing the key-value pairs of its attributes.
+            The dictionary is converted from the nbtlib Compound object to a dictionary with numpy data types
+            using the nbt_to_numpy() method.
+        """
+        result = np.array([None] * len(self.raw['BlockEntities']))
+        for i, block_entity in enumerate(self.raw['BlockEntities']):
+            result[i] = nbt_to_numpy(block_entity)
+        return result
 
     @property
     def offset_x(self) -> np.int8:
@@ -209,7 +240,7 @@ class Schematic():
     def worldedit_offset(self) -> Tuple[np.int8, np.int8, np.int8]:
         """Tuple: The worldedit WEOffset of the schematic in (WEOffsetX, WEOffsetY, WEOffsetZ)."""
         return self.worldedit_offset_x, self.worldedit_offset_y, self.worldedit_offset_z
-    
+
     @property
     def data_version(self) -> np.int8:
         """np.int8: The data version of the schematic. This is the ID of the Minecraft version the schematic was created in."""
