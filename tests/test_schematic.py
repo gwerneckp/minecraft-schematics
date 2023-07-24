@@ -50,12 +50,12 @@ def test_block_raw_properties():
 
 
 def test_schematic_load():
-    schematic = Schematic().load(all_blocks_directory)
+    schematic = Schematic.load(all_blocks_directory)
     assert isinstance(schematic.raw, nbt.Compound)
 
 
 def test_schematic_blocks_shape():
-    schematic = Schematic().load(all_blocks_directory)
+    schematic = Schematic.load(all_blocks_directory)
     schematicnbt = nbt.load(all_blocks_directory)
     expected_width = schematicnbt["Width"]
     expected_height = schematicnbt["Height"]
@@ -66,13 +66,13 @@ def test_schematic_blocks_shape():
 
 
 def test_schematic_blocks():
-    schematic = Schematic().load(all_blocks_directory)
+    schematic = Schematic.load(all_blocks_directory)
     print(schematic.blocks)
     assert schematic.blocks[0, 0, 0] == Block("minecraft:packed_ice")
 
 
 def test_offset():
-    schematic = Schematic().load(house_directory)
+    schematic = Schematic.load(house_directory)
     assert schematic.offset == (-6, 36, 24)
 
 
@@ -82,15 +82,15 @@ def test_worldedit_offset():
 
 
 def test_palette():
-    schematic = Schematic().load(house_directory)
+    schematic = Schematic.load(house_directory)
     assert schematic.palette[0] == Block("minecraft:water[level=0]")
 
 
 def test_palette_max():
-    schematic = Schematic().load(house_directory)
+    schematic = Schematic.load(house_directory)
     assert schematic.palette_max == 69
 
 
 def test_block_entities():
-    schematic = Schematic().load(block_entities_directory)
+    schematic = Schematic.load(block_entities_directory)
     assert json.loads(schematic.block_entities[0]['front_text']['messages'][1])['text'] == 'Hello world'

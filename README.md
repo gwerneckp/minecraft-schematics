@@ -30,7 +30,7 @@ The `Schematic` class is the main class of the library. It is used to load schem
 ```python
 from minecraftschematics import Schematic
 
-schematic = Schematic().load('path/to/your/schematic_file.schematic')
+schematic = Schematic.load('path/to/your/schematic_file.schematic')
 
 print(schematic.size)     # Output: (3, 4, 5)
 print(schematic.width)    # Output: 3

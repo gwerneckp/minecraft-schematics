@@ -59,7 +59,8 @@ class Schematic():
         """Representation of a Minecraft schematic."""
         self.raw = None
 
-    def load(self, path: str, force=False):
+    @staticmethod
+    def load(path: str, force=False):
         """Load the schematic from a file.
 
         Args:
@@ -67,7 +68,7 @@ class Schematic():
             force (bool, optional): Force loading the schematic even if it is an incompatible version. Defaults to False. (Not recommended as it may cause unintended errors.)
 
         Returns:
-            Schematic: The current instance of the Schematic class.
+            Schematic: An instance of the Schematic class.
 
         Raises:
             FileNotFoundError: If the file does not exist.
@@ -75,9 +76,10 @@ class Schematic():
             Exception: If the schematic is an incompatible version and force is False.
         """
         try:
-            self.raw = nbt.load(path)
+            s = Schematic()
+            s.raw = nbt.load(path)
             if (not force):
-                match self.raw['Version']:
+                match s.raw.get('Version'):
                     case None:
                         raise Exception(
                             "Version not found. This is likely due to an old version of the schematic format which this library does not support. Check out https://github.com/cbs228/nbtschematic for a library that supports version 1.")
@@ -88,14 +90,14 @@ class Schematic():
                         pass
                     case _:
                         raise Exception(
-                            f"This library does not fully support the version {self.raw['Version']} of the schematic format. Use force=True to force loading the schematic. This may cause unintended errors.")
+                            f"This library does not fully support the version {s.raw.get('Version')} of the schematic format. Use force=True to force loading the schematic. This may cause unintended errors.")
 
         except FileNotFoundError as e:
             raise FileNotFoundError(f"File not found: {path}") from e
         except nbt.lib.MalformedFileError as e:
             raise nbt.lib.MalformedFileError(
                 f"Error loading schematic: {path}") from e
-        return self
+        return s
 
     @property
     def size(self) -> Tuple[np.short, np.short, np.short]:

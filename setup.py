@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 NAME = "minecraftschematics"
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 DESCRIPTION = "A library for working with Minecraft Schematics in Python with numpy"
 with open("README.md", "r") as f:
     LONG_DESCRIPTION = f.read()
