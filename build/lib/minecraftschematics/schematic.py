@@ -59,7 +59,8 @@ class Schematic():
         """Representation of a Minecraft schematic."""
         self.raw = None
 
-    def load(self, path: str, force=False):
+    @staticmethod
+    def load(path: str, force=False):
         """Load the schematic from a file.
 
         Args:
@@ -67,7 +68,7 @@ class Schematic():
             force (bool, optional): Force loading the schematic even if it is an incompatible version. Defaults to False. (Not recommended as it may cause unintended errors.)
 
         Returns:
-            Schematic: The current instance of the Schematic class.
+            Schematic: An instance of the Schematic class.
 
         Raises:
             FileNotFoundError: If the file does not exist.
@@ -75,9 +76,10 @@ class Schematic():
             Exception: If the schematic is an incompatible version and force is False.
         """
         try:
-            self.raw = nbt.load(path)
+            s = Schematic()
+            s.raw = nbt.load(path)
             if (not force):
-                match self.raw['Version']:
+                match s.raw.get('Version'):
                     case None:
                         raise Exception(
                             "Version not found. This is likely due to an old version of the schematic format which this library does not support. Check out https://github.com/cbs228/nbtschematic for a library that supports version 1.")
@@ -88,14 +90,14 @@ class Schematic():
                         pass
                     case _:
                         raise Exception(
-                            f"This library does not fully support the version {self.raw['Version']} of the schematic format. Use force=True to force loading the schematic. This may cause unintended errors.")
+                            f"This library does not fully support the version {s.raw.get('Version')} of the schematic format. Use force=True to force loading the schematic. This may cause unintended errors.")
 
         except FileNotFoundError as e:
             raise FileNotFoundError(f"File not found: {path}") from e
         except nbt.lib.MalformedFileError as e:
             raise nbt.lib.MalformedFileError(
                 f"Error loading schematic: {path}") from e
-        return self
+        return s
 
     @property
     def size(self) -> Tuple[np.short, np.short, np.short]:
@@ -123,14 +125,9 @@ class Schematic():
         # create list with length of last index
         block_data = np.array(self.raw['BlockData'])
         blocks = np.array([None] * len(block_data))
-        palette_inversed = np.array([(Block(blockdata), self.raw['Palette'][blockdata])
-                                     for blockdata in self.raw['Palette']])
 
-        for block, id_in_schematic in palette_inversed:
-            # get positions of all blocks with id_in_schematic in block_data
-            positions = np.where(block_data == id_in_schematic)
-            # set all blocks at positions to block
-            blocks[positions] = block
+        for position, id_in_schematic in enumerate(block_data):
+            blocks[position] = self.palette[id_in_schematic]
 
         # reshape blocks to 3D array
         blocks = blocks.reshape(self.width, self.height, self.length)
@@ -159,12 +156,6 @@ class Schematic():
             result[self.raw['Palette'][blockdata]] = Block(blockdata)
 
         return result
-
-    @property
-    def palette_max(self) -> np.int8:
-
-        # If the palette max is not set, we can infer it from the length of the palette
-        return self.raw['PaletteMax'] or len(self.palette)
 
     @property
     def palette_max(self) -> np.int8:
