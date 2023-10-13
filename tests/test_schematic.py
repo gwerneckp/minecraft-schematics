@@ -7,13 +7,13 @@ import nbtlib as nbt
 from minecraftschematics import Block, Schematic
 
 # Test data
-all_blocks = "newblocks.schem"
+all_blocks = "v2_newblocks.schem"
 all_blocks_directory = path.join(path.dirname(__file__), "schematics", all_blocks)
 
-house = "house.schem"
+house = "v2_house.schem"
 house_directory = path.join(path.dirname(__file__), "schematics", house)
 
-block_entities = "block_entities_test.schem"
+block_entities = "v2_block_entities_test.schem"
 block_entities_directory = path.join(
     path.dirname(__file__), "schematics", block_entities
 )
@@ -52,7 +52,7 @@ def test_block_raw_properties():
     assert block.raw_properties == "east=none,north=side,power=0,south=side,west=none"
 
 
-# Schematic class tests
+# Schematic class tests V2
 
 
 def test_schematic_load():
@@ -83,7 +83,7 @@ def test_offset():
 
 
 def test_worldedit_offset():
-    schematic = Schematic().load(house_directory)
+    schematic = Schematic.load(house_directory)
     assert schematic.worldedit_offset == (-10, -1, 8)
 
 
