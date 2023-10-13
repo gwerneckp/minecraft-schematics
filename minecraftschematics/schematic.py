@@ -1,11 +1,10 @@
-from os import strerror
-from typing import List, Tuple
+from typing import Tuple
 from .utils import nbt_to_numpy
 import nbtlib as nbt
 import numpy as np
 
 
-class Block():
+class Block:
     def __init__(self, blockdata: str, block_entity: dict = None):
         """Representation of a block in the Minecraft schematic.
 
@@ -18,34 +17,34 @@ class Block():
     @property
     def type(self) -> str:
         """str: The type of the block without properties."""
-        return self.raw.split('[')[0]
+        return self.raw.split("[")[0]
 
     @property
     def properties(self) -> dict:
         """dict: A dictionary containing the properties of the block."""
         properties = {}
-        for prop in self.raw.split('[')[1].split(']')[0].split(','):
-            key, value = prop.split('=')
+        for prop in self.raw.split("[")[1].split("]")[0].split(","):
+            key, value = prop.split("=")
             properties[key] = value
 
         if self.block_entity:
-            properties['block_entity'] = self.block_entity
+            properties["block_entity"] = self.block_entity
 
         return properties
 
     @property
     def raw_properties(self) -> str:
         """str: The raw properties of the block without the block type."""
-        return self.raw.split('[')[1].split(']')[0]
+        return self.raw.split("[")[1].split("]")[0]
 
     def add_block_entity(self, block_entity: dict):
         self.block_entity = block_entity
 
     def __repr__(self) -> str:
-        return f'Block({self.raw}, {self.block_entity})'
+        return f"Block({self.raw}, {self.block_entity})"
 
     def __str__(self) -> str:
-        return f'Block({self.raw}, {self.block_entity})'
+        return f"Block({self.raw}, {self.block_entity})"
 
     def __eq__(self, __value: object) -> bool:
         if isinstance(__value, Block):
@@ -54,7 +53,7 @@ class Block():
             return False
 
 
-class Schematic():
+class Schematic:
     def __init__(self):
         """Representation of a Minecraft schematic."""
         self.raw = None
@@ -78,25 +77,27 @@ class Schematic():
         try:
             s = Schematic()
             s.raw = nbt.load(path)
-            if (not force):
-                match s.raw.get('Version'):
+            if not force:
+                match s.raw.get("Version"):
                     case None:
                         raise Exception(
-                            "Version not found. This is likely due to an old version of the schematic format which this library does not support. Check out https://github.com/cbs228/nbtschematic for a library that supports version 1.")
+                            "Version not found. This is likely due to an old version of the schematic format which this library does not support. Check out https://github.com/cbs228/nbtschematic for a library that supports version 1."
+                        )
                     case 1:
                         raise Exception(
-                            "Version 1 is not supported as it is an old version of the schematic format. Check out https://github.com/cbs228/nbtschematic for a library that supports version 1.")
+                            "Version 1 is not supported as it is an old version of the schematic format. Check out https://github.com/cbs228/nbtschematic for a library that supports version 1."
+                        )
                     case 2:
                         pass
                     case _:
                         raise Exception(
-                            f"This library does not fully support the version {s.raw.get('Version')} of the schematic format. Use force=True to force loading the schematic. This may cause unintended errors.")
+                            f"This library does not fully support the version {s.raw.get('Version')} of the schematic format. Use force=True to force loading the schematic. This may cause unintended errors."
+                        )
 
         except FileNotFoundError as e:
             raise FileNotFoundError(f"File not found: {path}") from e
         except nbt.lib.MalformedFileError as e:
-            raise nbt.lib.MalformedFileError(
-                f"Error loading schematic: {path}") from e
+            raise nbt.lib.MalformedFileError(f"Error loading schematic: {path}") from e
         return s
 
     @property
@@ -107,23 +108,23 @@ class Schematic():
     @property
     def width(self) -> np.short:
         """np.short: The width of the schematic."""
-        return np.short(self.raw['Width'])
+        return np.short(self.raw["Width"])
 
     @property
     def height(self) -> np.short:
         """np.short: The height of the schematic."""
-        return np.short(self.raw['Height'])
+        return np.short(self.raw["Height"])
 
     @property
     def length(self) -> np.short:
         """np.short: The length of the schematic."""
-        return np.short(self.raw['Length'])
+        return np.short(self.raw["Length"])
 
     @property
     def blocks(self) -> np.ndarray:
         """np.ndarray: A 3D numpy array representing the blocks in the schematic."""
         # create list with length of last index
-        block_data = np.array(self.raw['BlockData'])
+        block_data = np.array(self.raw["BlockData"])
         blocks = np.array([None] * len(block_data))
 
         for position, id_in_schematic in enumerate(block_data):
@@ -133,8 +134,9 @@ class Schematic():
         blocks = blocks.reshape(self.width, self.height, self.length)
 
         for block_entity in self.block_entities:
-            blocks[block_entity['Pos'][2], block_entity['Pos'][1],
-                   block_entity['Pos'][0]].add_block_entity(block_entity)
+            blocks[
+                block_entity["Pos"][2], block_entity["Pos"][1], block_entity["Pos"][0]
+            ].add_block_entity(block_entity)
 
         return blocks
 
@@ -151,9 +153,9 @@ class Schematic():
             np.array: An array containing the unique blocks in the schematic.
         """
 
-        result = np.array([None] * len(self.raw['Palette']))
-        for blockdata in self.raw['Palette']:
-            result[self.raw['Palette'][blockdata]] = Block(blockdata)
+        result = np.array([None] * len(self.raw["Palette"]))
+        for blockdata in self.raw["Palette"]:
+            result[self.raw["Palette"][blockdata]] = Block(blockdata)
 
         return result
 
@@ -168,7 +170,7 @@ class Schematic():
         """
 
         # If the palette max is not set, we can infer it from the length of the palette
-        return self.raw['PaletteMax'] or len(self.palette)
+        return self.raw["PaletteMax"] or len(self.palette)
 
     @property
     def block_entities(self) -> np.array:
@@ -182,25 +184,25 @@ class Schematic():
             The dictionary is converted from the nbtlib Compound object to a dictionary with numpy data types
             using the nbt_to_numpy() method.
         """
-        result = np.array([None] * len(self.raw['BlockEntities']))
-        for i, block_entity in enumerate(self.raw['BlockEntities']):
+        result = np.array([None] * len(self.raw["BlockEntities"]))
+        for i, block_entity in enumerate(self.raw["BlockEntities"]):
             result[i] = nbt_to_numpy(block_entity)
         return result
 
     @property
     def offset_x(self) -> np.int8:
         """np.short: The offset of the schematic in the x direction."""
-        return np.short(self.raw['Offset'][0])
+        return np.short(self.raw["Offset"][0])
 
     @property
     def offset_y(self) -> np.int8:
         """np.short: The offset of the schematic in the y direction."""
-        return np.short(self.raw['Offset'][1])
+        return np.short(self.raw["Offset"][1])
 
     @property
     def offset_z(self) -> np.int8:
         """np.short: The offset of the schematic in the z direction."""
-        return np.short(self.raw['Offset'][2])
+        return np.short(self.raw["Offset"][2])
 
     @property
     def offset(self) -> Tuple[np.int8, np.int8, np.int8]:
@@ -210,22 +212,22 @@ class Schematic():
     @property
     def metadata(self) -> dict:
         """dict: A dictionary containing the metadata of the schematic."""
-        return self.raw['Metadata']
+        return self.raw["Metadata"]
 
     @property
     def worldedit_offset_x(self) -> np.int8:
         """np.short: The worldedit WEOffsetX of the schematic."""
-        return np.int8(self.metadata.get('WEOffsetX'))
+        return np.int8(self.metadata.get("WEOffsetX"))
 
     @property
     def worldedit_offset_y(self) -> np.int8:
         """np.short: The worldedit WEOffsetY of the schematic."""
-        return np.int8(self.metadata.get('WEOffsetY'))
+        return np.int8(self.metadata.get("WEOffsetY"))
 
     @property
     def worldedit_offset_z(self) -> np.int8:
         """np.short: The worldedit WEOffsetZ of the schematic."""
-        return np.int8(self.metadata.get('WEOffsetZ'))
+        return np.int8(self.metadata.get("WEOffsetZ"))
 
     @property
     def worldedit_offset(self) -> Tuple[np.int8, np.int8, np.int8]:
@@ -235,4 +237,4 @@ class Schematic():
     @property
     def data_version(self) -> np.int8:
         """np.int8: The data version of the schematic. This is the ID of the Minecraft version the schematic was created in."""
-        return np.int8(self.raw['DataVersion'])
+        return np.int8(self.raw["DataVersion"])

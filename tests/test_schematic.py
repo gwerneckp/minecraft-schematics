@@ -3,33 +3,36 @@
 from os import path
 import json
 import nbtlib as nbt
-import numpy as np
 
 from minecraftschematics import Block, Schematic
 
 # Test data
-all_blocks = 'newblocks.schem'
-all_blocks_directory = path.join(
-    path.dirname(__file__), "schematics", all_blocks)
+all_blocks = "newblocks.schem"
+all_blocks_directory = path.join(path.dirname(__file__), "schematics", all_blocks)
 
-house = 'house.schem'
+house = "house.schem"
 house_directory = path.join(path.dirname(__file__), "schematics", house)
 
-block_entities = 'block_entities_test.schem'
+block_entities = "block_entities_test.schem"
 block_entities_directory = path.join(
-    path.dirname(__file__), "schematics", block_entities)
+    path.dirname(__file__), "schematics", block_entities
+)
 
 # Block class tests
 
 
 def test_block_type():
-    block_data = "minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]"
+    block_data = (
+        "minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]"
+    )
     block = Block(block_data)
     assert block.type == "minecraft:redstone_wire"
 
 
 def test_block_properties():
-    block_data = "minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]"
+    block_data = (
+        "minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]"
+    )
     block = Block(block_data)
     properties = block.properties
     assert properties == {
@@ -37,14 +40,17 @@ def test_block_properties():
         "north": "side",
         "power": "0",
         "south": "side",
-        "west": "none"
+        "west": "none",
     }
 
 
 def test_block_raw_properties():
-    block_data = "minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]"
+    block_data = (
+        "minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]"
+    )
     block = Block(block_data)
     assert block.raw_properties == "east=none,north=side,power=0,south=side,west=none"
+
 
 # Schematic class tests
 
@@ -93,4 +99,7 @@ def test_palette_max():
 
 def test_block_entities():
     schematic = Schematic.load(block_entities_directory)
-    assert json.loads(schematic.block_entities[0]['front_text']['messages'][1])['text'] == 'Hello world'
+    assert (
+        json.loads(schematic.block_entities[0]["front_text"]["messages"][1])["text"]
+        == "Hello world"
+    )

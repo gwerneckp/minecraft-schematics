@@ -1,6 +1,7 @@
 import nbtlib as nbt
 import numpy as np
 
+
 def nbt_to_numpy(compound) -> dict:
     """Converts an nbtlib Compound to a dictionary with numpy data types.
 
@@ -9,7 +10,7 @@ def nbt_to_numpy(compound) -> dict:
     and easy data manipulation.
 
     Args:
-        nbt_obj (nbtlib.Compound or nbtlib.List): The nbtlib object to convert.            
+        nbt_obj (nbtlib.Compound or nbtlib.List): The nbtlib object to convert.
 
     Returns:
         dict: The converted dictionary.
@@ -34,8 +35,9 @@ def nbt_to_numpy(compound) -> dict:
         +-------------------+---------------------------------------------------------+
     """
 
-    iterator = compound.items() if isinstance(
-        compound, nbt.Compound) else enumerate(compound)
+    iterator = (
+        compound.items() if isinstance(compound, nbt.Compound) else enumerate(compound)
+    )
 
     result = {}
     for key, value in iterator:
