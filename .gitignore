@@ -8,3 +8,5 @@ minecraftschematics/__pycache__/
 tests/__pycache__/
 pytest_cache/minecraftschematics.egg-info/
 sepecification.md
+.vscode/
+.eggs/
