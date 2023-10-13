@@ -4,9 +4,8 @@ venv/
 .code/
 *.egg-info/
 *.egg
-minecraftschematics/__pycache__/
-tests/__pycache__/
-pytest_cache/minecraftschematics.egg-info/
-sepecification.md
+**/__pycache__/
+minecraftschematics.egg-info/
+pytest_cache/
 .vscode/
 .eggs/
