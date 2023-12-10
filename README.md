@@ -82,4 +82,4 @@ This project is licensed under the [MIT License](https://opensource.org/licenses
 
 **Email**: gwerneckpaiva@gmail.com
 
-**GitHub**: [Your GitHub Profile](https://github.com/gwerneckpaiva/)
+**GitHub**: [gwerneckp](https://github.com/gwerneckp/)
